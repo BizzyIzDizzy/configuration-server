@@ -30,6 +30,8 @@ dependencies {
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
     compile 'io.github.microutils:kotlin-logging:1.5.4'
+
+    compile "io.ktor:ktor-gson:$ktor_version"
 }
 
 sourceCompatibility = 1.8

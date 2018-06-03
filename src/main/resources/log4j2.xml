@@ -6,10 +6,16 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
+        <Root level="WARN">
             <AppenderRef ref="Console"/>
         </Root>
         <Logger name="me.marolt.configurationserver" level="TRACE" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.eclipse.jetty" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="io.netty" level="WARN" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
     </Loggers>

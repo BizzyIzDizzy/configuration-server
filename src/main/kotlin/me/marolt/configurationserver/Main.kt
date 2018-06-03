@@ -2,12 +2,20 @@ package me.marolt.configurationserver
 
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
+import me.marolt.configurationserver.utils.DEVELOPMENT_MODE
 import mu.KotlinLogging
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.config.Configurator
 import kotlin.concurrent.thread
 
 val logger = KotlinLogging.logger {}
 
 fun main(args: Array<String>) {
+    if (DEVELOPMENT_MODE) {
+        Configurator.setLevel("io.netty", Level.DEBUG)
+        Configurator.setLevel("org.eclipse.jetty", Level.DEBUG)
+    }
+
     val serverControl = ServerControl()
 
     logger.info { "Starting server control!" }
