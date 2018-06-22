@@ -1,14 +1,20 @@
 package me.marolt.configurationserver.services
 
-import me.marolt.configurationserver.services.dtos.Configuration
-
 class ConfigurationService {
 
-    suspend fun flush(configurationPath: String? = null) {
+    suspend fun flushAll(projectId: ProjectId = InvalidProjectId) {
         throw TODO()
     }
 
-    suspend fun fetch(configurationPath: String): Configuration {
+    suspend fun flush(projectId: ProjectId, configurationId: ConfigurationId = InvalidConfigurationId) {
+        throw TODO()
+    }
+
+    suspend fun fetchAll(projectId: ProjectId = InvalidProjectId): List<IConfiguration> {
+        throw TODO()
+    }
+
+    suspend fun fetch(projectId: ProjectId, configurationId: ValidConfigurationId): IConfiguration{
         throw TODO()
     }
 
