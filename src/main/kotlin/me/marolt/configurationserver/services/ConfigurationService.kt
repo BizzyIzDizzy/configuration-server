@@ -10,7 +10,7 @@ class ConfigurationService {
         throw TODO()
     }
 
-    suspend fun fetchAll(projectId: ProjectId = InvalidProjectId): List<IConfiguration> {
+    suspend fun fetchAll(projectId: ProjectId = InvalidProjectId): Set<IConfiguration> {
         throw TODO()
     }
 

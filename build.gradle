@@ -32,6 +32,9 @@ dependencies {
     compile 'io.github.microutils:kotlin-logging:1.5.4'
 
     compile "io.ktor:ktor-gson:$ktor_version"
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
 }
 
 sourceCompatibility = 1.8
@@ -53,4 +56,16 @@ shadowJar {
     baseName = 'configuration-server'
     version = null
     classifier = null
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    reports {
+        html.enabled = true
+    }
 }

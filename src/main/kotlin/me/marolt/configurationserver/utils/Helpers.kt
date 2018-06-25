@@ -33,3 +33,16 @@ fun Throwable.stackTraceAsString(): String {
         }
     }
 }
+
+inline fun <T> Iterable<T>.singleOrDefault(filter: (T) -> Boolean): T? {
+    val filtered = this.filter(filter)
+    return when {
+        filtered.size > 1 -> throw IllegalStateException("Collection contains more than one element!")
+        filtered.isEmpty() -> null
+        else -> filtered[0]
+    }
+}
+
+inline fun <T> Iterable<T>.single(filter: (T) -> Boolean): T {
+    return this.singleOrDefault(filter) ?: throw IllegalStateException("Collection does not contain an element matching with provided filter!")
+}
