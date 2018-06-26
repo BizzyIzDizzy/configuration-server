@@ -42,7 +42,3 @@ inline fun <T> Iterable<T>.singleOrDefault(filter: (T) -> Boolean): T? {
         else -> filtered[0]
     }
 }
-
-inline fun <T> Iterable<T>.single(filter: (T) -> Boolean): T {
-    return this.singleOrDefault(filter) ?: throw IllegalStateException("Collection does not contain an element matching with provided filter!")
-}

@@ -32,18 +32,19 @@ data class Configuration(
     }
 
     private fun materialize(): MaterializedConfiguration {
-        val allProperties = ownProperties.toMutableMap()
+        val allProperties = mutableMapOf<String, Any>()
 
         // override properties with values from parent configuration
         // sort by parent sort order value (from highest to lowest)
         parents.sortedByDescending { it.order }
                 .forEach { parent ->
                     parent.config.properties.forEach { key, value ->
-                        if (!allProperties.containsKey(key)) {
-                            allProperties[key] = value
-                        }
+                        allProperties[key] = value
                     }
                 }
+
+        // child properties override everything
+        ownProperties.forEach { allProperties[it.key] = it.value }
 
         return MaterializedConfiguration(typedId, projectId, requiredRoles, allProperties)
     }

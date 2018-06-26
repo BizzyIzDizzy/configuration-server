@@ -35,7 +35,8 @@ class PropertiesConfigurationParser : IConfigurationParser {
             configurationId: ValidConfigurationId,
             current: String,
             rest: Map<ValidConfigurationId, String>,
-            parsed: Set<IConfiguration>): Set<IConfiguration> {
+            parsed: Set<IConfiguration>,
+            callerConfigurationId: ConfigurationId = InvalidConfigurationId): Set<IConfiguration> {
 
         val existingConfiguration = parsed.singleOrDefault { it.typedId == configurationId }
         if (existingConfiguration == null) {
@@ -47,16 +48,33 @@ class PropertiesConfigurationParser : IConfigurationParser {
                 val applicableParsed = parsed.toMutableSet()
 
                 val parentsString = properties.getProperty(ConfigurationMetadata.PARENT_CONFIGURATIONS.path)
+                properties.remove(ConfigurationMetadata.PARENT_CONFIGURATIONS.path)
                 logger.trace { "Parent configurations: $parentsString!" }
                 val parentStrings = parentsString.split(";").map { it.trim() }
                 val parents = mutableSetOf<ConfigurationParent>()
                 var order = parentStrings.size
-                parentStrings.forEach { parent ->
+                for (parent in parentStrings) {
                     val parentConfigurationId = ValidConfigurationId(parent)
+
+                    if (callerConfigurationId != InvalidConfigurationId) {
+                        val errorMessage = "Configuration loop detected - ${parentConfigurationId.id} - ${(callerConfigurationId as ValidConfigurationId).id}!"
+                        logger.error { errorMessage }
+                        throw IllegalStateException(errorMessage)
+                    }
+
                     val existingParentConfiguration = applicableParsed.singleOrDefault { parentConfigurationId == it.typedId }
                     if (existingParentConfiguration == null) {
                         logger.trace { "Parsing parent configuration with id $parentConfigurationId" }
-                        val newlyParsed = parseSingle(projectId, parentConfigurationId, rest.asIterable().single { it.key == parentConfigurationId }.value, rest.filter { it.key != parentConfigurationId }, applicableParsed)
+                        val configurationContent = rest.asIterable().singleOrDefault { it.key == parentConfigurationId }
+
+                        if (configurationContent == null) {
+                            val errorMessage = "Could not find configuration content with id ${parentConfigurationId.id}!"
+                            logger.error { errorMessage }
+                            throw IllegalStateException(errorMessage)
+                        }
+
+                        val restWithoutTarget = rest.filter { it.key != parentConfigurationId }
+                        val newlyParsed = parseSingle(projectId, parentConfigurationId, configurationContent.value, restWithoutTarget, applicableParsed, configurationId)
                         logger.trace { "When parsing parent configuration with id: $parentConfigurationId, ${newlyParsed.size} configurations were parsed." }
                         applicableParsed.addAll(newlyParsed)
                         parents.add(ConfigurationParent(applicableParsed.single { it.typedId == parentConfigurationId }, order--))
