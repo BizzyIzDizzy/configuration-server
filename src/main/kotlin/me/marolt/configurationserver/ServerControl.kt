@@ -56,7 +56,7 @@ class ServerControl : IControl {
 
         server = serverInstance
 
-        logger.info { "Server started!" }
+        logger.info { "Server started! Listening at port $port." }
     }
 }
 

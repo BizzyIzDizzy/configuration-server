@@ -30,7 +30,7 @@ class PropertiesConfigurationParserTests {
                 to """
                     db.host=localhost
                     db.port=5432
-                    db.password=123
+                    db.password=1234
                 """.trimIndent()
         )
 
