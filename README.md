@@ -1,3 +1,5 @@
+##### Build status: [![Build Status](https://travis-ci.org/BizzyIzDizzy/configuration-server.svg?branch=master)](https://travis-ci.org/BizzyIzDizzy/configuration-server)
+
 # Configuration server
 
 Lightweight centralized configuration server.
