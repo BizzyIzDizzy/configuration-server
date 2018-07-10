@@ -2,11 +2,9 @@ sudo: required
 services:
   - docker
 
-script:
-  - docker build -t marolt/configuration-server .
-
-before_deploy:
+before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-deploy:
+script:
+  - docker build -t marolt/configuration-server .
   - docker push marolt/configuration-server
