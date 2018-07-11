@@ -12,7 +12,7 @@ script:
     --tag marolt/configuration-server:v0.1 \
     --tag "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}" \
     .
-  - docker push marolt/configuration-server
-  - docker push marolt/configuration-server:latest
-  - docker push marolt/configuration-server:v0.1
-  - docker push "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
+    docker push marolt/configuration-server
+    docker push marolt/configuration-server:latest
+    docker push marolt/configuration-server:v0.1
+    docker push "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
