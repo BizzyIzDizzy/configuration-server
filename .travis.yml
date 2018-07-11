@@ -6,11 +6,13 @@ before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 script:
-  - docker build -t marolt/configuration-server .
-  - docker tag marolt/configuration marolt/configuration-server:latest
-  - docker tag marolt/configuration marolt/configuration-server:v0.1
-  - docker tag marolt/configuration "marolt/configuration-server:v0.1_${TRAVIS_COMMIT}"
+  - docker build \
+    --tag marolt/configuration-server \
+    --tag marolt/configuration-server:latest \
+    --tag marolt/configuration-server:v0.1 \
+    --tag "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}" \
+    .
   - docker push marolt/configuration-server
   - docker push marolt/configuration-server:latest
   - docker push marolt/configuration-server:v0.1
-  - docker push "marolt/configuration-server:v0.1_${TRAVIS_COMMIT}"
+  - docker push "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
