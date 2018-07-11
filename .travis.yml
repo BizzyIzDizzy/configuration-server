@@ -7,10 +7,10 @@ before_script:
 
 script:
   - docker build tag marolt/configuration-server .
-    docker tag marolt/configuration-server marolt/configuration-server:latest
-    docker tag marolt/configuration-server marolt/configuration-server:v0.1
-    docker tag marolt/configuration-server "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
-    docker push marolt/configuration-server
-    docker push marolt/configuration-server:latest
-    docker push marolt/configuration-server:v0.1
-    docker push "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
+  - docker tag marolt/configuration-server marolt/configuration-server:latest
+  - docker tag marolt/configuration-server marolt/configuration-server:v0.1
+  - docker tag marolt/configuration-server "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
+  - docker push marolt/configuration-server
+  - docker push marolt/configuration-server:latest
+  - docker push marolt/configuration-server:v0.1
+  - docker push "marolt/configuration-server:v0.1_${TRAVIS_BUILD_NUMBER}"
