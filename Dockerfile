@@ -29,4 +29,4 @@ FROM openjdk:8-jre-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY --from=0 /usr/src/app/build/libs/configuration-server.jar ./
+COPY --from=0 /usr/src/app/core/build/libs/configuration-server.jar ./

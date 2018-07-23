@@ -1,0 +1,33 @@
+buildscript {
+    ext.kotlin_version = '1.2.51'
+    ext.kotlin_version = '1.2.40'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+group 'me.marolt'
+version '0.1-SNAPSHOT'
+
+apply plugin: 'kotlin'
+
+dependencies {
+    compile project(":utils")
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+sourceCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+repositories {
+    mavenCentral()
+}

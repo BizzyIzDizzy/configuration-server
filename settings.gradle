@@ -1,2 +1,3 @@
 rootProject.name = 'configuration-server'
 
+include ':core', ':api', ':utils'
