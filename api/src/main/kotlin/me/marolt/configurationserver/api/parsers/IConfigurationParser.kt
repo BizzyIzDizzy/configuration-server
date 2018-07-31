@@ -1,4 +1,4 @@
-package me.marolt.configurationserver.services.parsers
+package me.marolt.configurationserver.api.parsers
 
 import me.marolt.configurationserver.api.IConfiguration
 import me.marolt.configurationserver.api.ValidConfigurationId

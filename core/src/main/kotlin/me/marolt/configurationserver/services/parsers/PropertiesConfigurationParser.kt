@@ -1,6 +1,7 @@
 package me.marolt.configurationserver.services.parsers
 
 import me.marolt.configurationserver.api.*
+import me.marolt.configurationserver.api.parsers.IConfigurationParser
 import me.marolt.configurationserver.utils.singleOrDefault
 import mu.KotlinLogging
 import java.util.*

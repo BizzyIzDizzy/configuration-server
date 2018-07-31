@@ -1,6 +1,7 @@
 package me.marolt.configurationserver.services.parsers
 
 import me.marolt.configurationserver.api.ValidConfigurationId
+import me.marolt.configurationserver.api.parsers.IConfigurationParser
 import me.marolt.configurationserver.utils.singleOrDefault
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
