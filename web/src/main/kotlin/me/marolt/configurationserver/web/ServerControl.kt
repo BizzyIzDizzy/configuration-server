@@ -1,4 +1,4 @@
-package me.marolt.configurationserver
+package me.marolt.configurationserver.web
 
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -28,19 +28,6 @@ class ServerControl : IControl {
         @Synchronized get
         @Synchronized set
 
-    override suspend fun stop() {
-        logger.info { "Stopping server!" }
-
-        val serverInstance = server
-
-        if (serverInstance == null) {
-            logger.warn { "Server isn't started!" }
-        } else {
-            serverInstance.stop(1000, 1000, TimeUnit.MILLISECONDS)
-            logger.info { "Server stopped!" }
-        }
-    }
-
     override suspend fun start() {
         logger.info { "Starting server!" }
 
@@ -57,6 +44,19 @@ class ServerControl : IControl {
         server = serverInstance
 
         logger.info { "Server started! Listening at port $port." }
+    }
+
+    override suspend fun stop() {
+        logger.info { "Stopping server!" }
+
+        val serverInstance = server
+
+        if (serverInstance == null) {
+            logger.warn { "Server isn't started!" }
+        } else {
+            serverInstance.stop(1000, 1000, TimeUnit.MILLISECONDS)
+            logger.info { "Server stopped!" }
+        }
     }
 }
 

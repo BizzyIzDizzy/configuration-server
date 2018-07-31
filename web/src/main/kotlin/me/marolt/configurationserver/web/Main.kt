@@ -1,4 +1,4 @@
-package me.marolt.configurationserver
+package me.marolt.configurationserver.web
 
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
