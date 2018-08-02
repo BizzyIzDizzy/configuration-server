@@ -1,0 +1,19 @@
+group 'me.marolt'
+version '0.1-SNAPSHOT'
+
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject ->
+            subProject.buildscript.configurations.each { configuration ->
+                if (configuration.isCanBeResolved()) {
+                    configuration.resolve()
+                }
+            }
+            subProject.configurations.each { configuration ->
+                if (configuration.isCanBeResolved()) {
+                    configuration.resolve()
+                }
+            }
+        }
+    }
+}

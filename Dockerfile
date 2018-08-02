@@ -11,6 +11,15 @@ COPY gradlew ./
 COPY gradle ./gradle
 RUN ./gradlew
 
+# download dependencies
+COPY settings.gradle build.gradle ./
+COPY ./api/build.gradle ./api/
+COPY ./core/build.gradle ./core/
+COPY ./utils/build.gradle ./utils/
+COPY ./web/build.gradle ./web/
+RUN ./gradlew resolveDependencies
+
+# now copy source and build
 COPY ./ ./
 RUN ./gradlew test shadowJar
 
