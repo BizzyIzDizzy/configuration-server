@@ -1,6 +1,8 @@
 .gradle
 .idea
-build
+*/build/*
+*/out/*
 .gitignore
 LICENSE
 README.md
+.travis.yml
