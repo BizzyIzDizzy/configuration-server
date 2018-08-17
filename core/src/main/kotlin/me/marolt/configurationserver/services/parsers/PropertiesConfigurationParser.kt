@@ -83,13 +83,13 @@ class PropertiesConfigurationParser : IConfigurationParser {
                 }
 
                 logger.trace { "Done parsing parents - parsing configuration with id $configurationId." }
-                val pairs = properties.entries.map { Pair<String, Any>(it.key.toString(), it.value) }.toTypedArray()
+                val pairs = properties.entries.map { Pair(it.key.toString(), it.value.toString()) }.toTypedArray()
                 applicableParsed.add(Configuration(configurationId, parents, mapOf(*pairs)))
 
                 return applicableParsed
             } else {
                 logger.trace { "No parent configurations found - continuing with parsing properties for configuration with id $configurationId." }
-                val pairs = properties.entries.map { Pair<String, Any>(it.key.toString(), it.value) }.toTypedArray()
+                val pairs = properties.entries.map { Pair(it.key.toString(), it.value.toString()) }.toTypedArray()
                 return setOf(Configuration(configurationId, setOf(), mapOf(*pairs)))
             }
         } else {
