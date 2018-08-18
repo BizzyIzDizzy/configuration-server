@@ -79,10 +79,10 @@ internal fun parseExpression(expr: String): Expression {
 }
 
 internal fun unresolvedVariables(expr: Expression, variables: Set<String>): Set<String> {
-    when (expr) {
+    return when (expr) {
         is Constant -> return emptySet()
         is Variable -> {
-            return if (variables.contains(expr.name)) {
+            if (variables.contains(expr.name)) {
                 emptySet()
             } else {
                 setOf(expr.name)
@@ -92,13 +92,20 @@ internal fun unresolvedVariables(expr: Expression, variables: Set<String>): Set<
             val a = unresolvedVariables(expr.a, variables)
             val b = unresolvedVariables(expr.b, variables)
 
-            return a.union(b)
+            a.union(b)
         }
     }
 }
 
 internal fun evaluateExpression(expr: Expression, variables: Map<String, Double>): Double {
-    TODO()
+    return when(expr) {
+        is Constant -> expr.number
+        is Variable -> variables[expr.name] ?: throw IllegalStateException("Variable ${expr.name} should be present in variables map!")
+        is Sum -> evaluateExpression(expr.a, variables) + evaluateExpression(expr.b, variables)
+        is Sub -> evaluateExpression(expr.a, variables) - evaluateExpression(expr.b, variables)
+        is Mul -> evaluateExpression(expr.a, variables) * evaluateExpression(expr.b, variables)
+        is Div -> evaluateExpression(expr.a, variables) / evaluateExpression(expr.b, variables)
+    }
 }
 
 internal sealed class Expression

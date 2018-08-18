@@ -240,6 +240,32 @@ class ParserUtilsTests {
             assertEquals(0, unresolvedVariables.size)
         }
 
+        @Test
+        @DisplayName("Evaluate an expression with variables")
+        fun evaluate_expression_with_variables() {
+            val expr = Sum(
+                    Constant(1.25),
+                    Mul(
+                            Variable("test1"),
+                            Div(
+                                    Variable("test2"),
+                                    Sub(
+                                            Variable("test1"),
+                                            Constant(2.5)
+                                    )
+                            )
+                    )
+            )
+
+            val variables = mapOf(
+                    "test1" to 5.0,
+                    "test2" to 10.75
+            )
+
+            val result = evaluateExpression(expr, variables)
+
+            assertEquals(22.75, result)
+        }
     }
 
 }
