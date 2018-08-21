@@ -13,8 +13,9 @@ open class MaterializedConfiguration(
 
 data class Configuration(
         override val typedId: ValidConfigurationId,
-        private val parents: Set<ConfigurationParent>,
-        private val ownProperties: Map<String, String>) : IConfiguration {
+        val parents: Set<ConfigurationParent>,
+        val ownProperties: Map<String, String>,
+        val formattedProperties: List<Map<String, String>> = emptyList()) : IConfiguration {
 
     override val properties: Map<String, String> by lazy {
         materialize().properties
@@ -34,6 +35,13 @@ data class Configuration(
 
         // child properties override everything
         ownProperties.forEach { allProperties[it.key] = it.value }
+
+        // formatted properties override the last
+        formattedProperties.forEach {
+            it.forEach {entry ->
+                allProperties[entry.key] = entry.value
+            }
+        }
 
         return MaterializedConfiguration(typedId, allProperties)
     }

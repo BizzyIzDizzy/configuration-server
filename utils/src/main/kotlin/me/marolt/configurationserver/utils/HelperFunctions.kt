@@ -1,5 +1,6 @@
 package me.marolt.configurationserver.utils
 
+import mu.KLogger
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -34,11 +35,7 @@ fun Throwable.stackTraceAsString(): String {
     }
 }
 
-inline fun <T> Iterable<T>.singleOrDefault(filter: (T) -> Boolean): T? {
-    val filtered = this.filter(filter)
-    return when {
-        filtered.size > 1 -> throw IllegalStateException("Collection contains more than one element!")
-        filtered.isEmpty() -> null
-        else -> filtered[0]
-    }
+fun KLogger.logAndThrow(throwable: Throwable) {
+    this.error { throwable.message }
+    throw throwable
 }
