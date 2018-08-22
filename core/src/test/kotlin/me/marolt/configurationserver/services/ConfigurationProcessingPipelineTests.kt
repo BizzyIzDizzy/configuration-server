@@ -17,7 +17,7 @@ class ConfigurationProcessingPipelineTests {
     }
 
     @Test
-    fun test() {
+    fun simple_pipeline() {
         val results = pipeline.run()
 
         assertEquals(2, results.size)

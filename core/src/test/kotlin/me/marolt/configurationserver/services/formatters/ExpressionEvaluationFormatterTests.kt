@@ -19,7 +19,7 @@ class ExpressionEvaluationFormatterTests {
 
     @Test
     @DisplayName("Find and remove expression from a property")
-    fun test() {
+    fun find_and_remove_expression_from_a_property() {
         val config = Configuration(ValidConfigurationId("test"), emptySet(), mapOf(
                 "test.test1" to "testing1\${properties['test.test2']}testing2",
                 "test.test2" to "testing1testing2testing3",
