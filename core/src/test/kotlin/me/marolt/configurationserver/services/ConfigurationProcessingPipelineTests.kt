@@ -32,17 +32,20 @@ class ConfigurationProcessingPipelineTests {
         val envConfig = results.singleOrNull { it.typedId == ValidConfigurationId("env") }
         assertNotNull(envConfig)
         val envProps = envConfig!!.properties;
-        assertEquals(3, envProps.size)
+        assertEquals(4, envProps.size)
         assertEquals("localhost", envProps.getValue("api.host"))
         assertEquals("8080", envProps.getValue("api.port"))
         assertEquals("http://localhost:8080", envProps.getValue("api.url"))
+        assertEquals("Testing http://localhost:8080 API", envProps.getValue("api.description"))
 
         val projectConfig = results.singleOrNull { it.typedId == ValidConfigurationId("testProject/testProject") }
         assertNotNull(projectConfig)
         val projectProps = projectConfig!!.properties
-        assertEquals(3, projectProps.size)
+        assertEquals(4, projectProps.size)
         assertEquals("1.1.1.1", projectProps.getValue("api.host"))
         assertEquals("1234", projectProps.getValue("api.port"))
         assertEquals("http://1.1.1.1:1234", projectProps.getValue("api.url"))
+        assertEquals("Testing http://1.1.1.1:1234 API", projectProps.getValue("api.description"))
+
     }
 }
