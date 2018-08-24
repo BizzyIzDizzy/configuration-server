@@ -1,8 +1,8 @@
 package me.marolt.configurationserver.services
 
 import me.marolt.configurationserver.api.ValidConfigurationId
+import me.marolt.configurationserver.plugins.loaders.DirectoryConfigurationLoaderPlugin
 import me.marolt.configurationserver.services.formatters.ExpressionEvaluationFormatter
-import me.marolt.configurationserver.services.loaders.FolderConfigurationLoader
 import me.marolt.configurationserver.services.parsers.PropertiesConfigurationContentParser
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -15,8 +15,11 @@ class ConfigurationProcessingPipelineTests {
     private val pipeline: ConfigurationProcessingPipeline
 
     init {
-        val loader1 = FolderConfigurationLoader("./src/test/resources/configurations1")
-        val loader2 = FolderConfigurationLoader("./src/test/resources/configurations2")
+        val loader1 = DirectoryConfigurationLoaderPlugin.DirectoryConfigurationLoader()
+        loader1.configure(mapOf("root.path" to "./src/test/resources/configurations1"))
+        val loader2 = DirectoryConfigurationLoaderPlugin.DirectoryConfigurationLoader()
+        loader2.configure(mapOf("root.path" to "./src/test/resources/configurations2"))
+
         val parser = PropertiesConfigurationContentParser()
         val formatter = ExpressionEvaluationFormatter()
         pipeline = ConfigurationProcessingPipeline(setOf(loader1, loader2), setOf(parser), listOf(formatter))

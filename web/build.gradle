@@ -27,6 +27,7 @@ repositories {
 
 dependencies {
     compile project(":core")
+    shadow project(":plugins:loaders:directory-loader")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
@@ -34,6 +35,8 @@ dependencies {
     compile 'io.github.microutils:kotlin-logging:1.5.4'
 
     compile "io.ktor:ktor-gson:$ktor_version"
+
+    compile "org.pf4j:pf4j:2.4.0"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
