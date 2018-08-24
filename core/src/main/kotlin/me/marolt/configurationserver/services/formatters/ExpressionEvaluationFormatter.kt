@@ -22,19 +22,14 @@ class ExpressionEvaluationFormatter : IConfigurationFormatter {
 
         engine.eval("""
             let formatterClass = Java.type('me.marolt.configurationserver.services.formatters.ExpressionEvaluationFormatter');
-            let propertyCache = {};
 
-            function reset() {
-                propertyCache = {};
+            function typedResult(res, type) {
+                return formatterClass.typedResult(res, type);
             }
 
             function evaluate(formatter, config, script) {
                 var getString = function(key) {
-                    if(propertyCache[key] !== undefined) {
-                        return propertyCache[key];
-                    }
                     var value = formatter.getProperty(key, config);
-                    propertyCache[key] = value;
                     return value;
                 };
                 var getInt = function(key) {
@@ -52,8 +47,6 @@ class ExpressionEvaluationFormatter : IConfigurationFormatter {
     }
 
     override fun format(config: Configuration): Configuration {
-        functionEngine.invokeFunction("reset")
-
         val allProperties = config.properties
 
         val formattedProperties = mutableMapOf<String, String>()
@@ -91,10 +84,13 @@ class ExpressionEvaluationFormatter : IConfigurationFormatter {
 
         var previous = 0
         entries.forEach {
+            logger.info { "Evaluating expression '${it.value}' for property '$key'." }
             val result = functionEngine.invokeFunction("evaluate", this, config, it.value)
             logger.info { "Evaluating expression '${it.value}' for property '$key' returned '$result' (type ${result.javaClass})." }
             sb.append(value.substring(previous, it.key.first))
+
             sb.append(result)
+
             previous = it.key.last + 1
         }
         sb.append(value.substring(previous))
