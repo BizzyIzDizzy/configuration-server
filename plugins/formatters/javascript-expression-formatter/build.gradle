@@ -13,23 +13,16 @@ group 'me.marolt'
 version '0.1-SNAPSHOT'
 
 apply plugin: 'kotlin'
-
-repositories {
-    jcenter()
-}
+apply plugin: 'org.jetbrains.kotlin.kapt'
 
 dependencies {
     compile project(":api")
-
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile 'io.github.microutils:kotlin-logging:1.5.4'
+    kapt "org.pf4j:pf4j:2.4.0"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
     testRuntime "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
-    testCompile project(":plugins:loaders:directory-loader")
-    testCompile project(":plugins:parsers:properties-parser")
-    testCompile project(":plugins:formatters:javascript-expression-formatter")
 }
 
 sourceCompatibility = 1.8
@@ -40,10 +33,25 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+repositories {
+    mavenCentral()
+}
 
-kotlin {
-    experimental {
-        coroutines "enable"
+jar {
+    manifest {
+        attributes(
+                "Plugin-Class": "me.marolt.configurationserver.plugins.formatters.JavascriptExpressionFormatterPlugin",
+                "Plugin-Dependencies": "",
+                "Plugin-Id": "javascript-expression-formatter-plugin",
+                "Plugin-Provider": "Uroš Marolt",
+                "Plugin-Version" : "0.0.1"
+        )
+    }
+    doLast {
+        copy {
+            from "build/libs/javascript-expression-formatter-0.1-SNAPSHOT.jar"
+            into "../../bin/"
+        }
     }
 }
 

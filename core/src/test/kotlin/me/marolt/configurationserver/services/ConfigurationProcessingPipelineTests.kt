@@ -1,9 +1,9 @@
 package me.marolt.configurationserver.services
 
 import me.marolt.configurationserver.api.ValidConfigurationId
+import me.marolt.configurationserver.plugins.formatters.JavascriptExpressionFormatterPlugin
 import me.marolt.configurationserver.plugins.loaders.DirectoryConfigurationLoaderPlugin
-import me.marolt.configurationserver.services.formatters.ExpressionEvaluationFormatter
-import me.marolt.configurationserver.services.parsers.PropertiesConfigurationContentParser
+import me.marolt.configurationserver.plugins.parsers.PropertiesConfigurationContentParserPlugin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.DisplayName
@@ -20,8 +20,8 @@ class ConfigurationProcessingPipelineTests {
         val loader2 = DirectoryConfigurationLoaderPlugin.DirectoryConfigurationLoader()
         loader2.configure(mapOf("root.path" to "./src/test/resources/configurations2"))
 
-        val parser = PropertiesConfigurationContentParser()
-        val formatter = ExpressionEvaluationFormatter()
+        val parser = PropertiesConfigurationContentParserPlugin.PropertiesConfigurationContentParser()
+        val formatter = JavascriptExpressionFormatterPlugin.JavascriptExpressionFormatter()
         pipeline = ConfigurationProcessingPipeline(setOf(loader1, loader2), setOf(parser), listOf(formatter))
     }
 

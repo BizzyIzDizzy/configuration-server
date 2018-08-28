@@ -1,20 +1,19 @@
-package me.marolt.configurationserver.services.formatters
+package me.marolt.configurationserver.plugins.formatters
 
 import me.marolt.configurationserver.api.Configuration
 import me.marolt.configurationserver.api.IConfigurationFormatter
 import me.marolt.configurationserver.api.ValidConfigurationId
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ExpressionEvaluationFormatterTests {
+class JavascriptExpressionFormatterTests {
     private val formatter: IConfigurationFormatter;
 
     init {
-        formatter = ExpressionEvaluationFormatter()
+        formatter = JavascriptExpressionFormatterPlugin.JavascriptExpressionFormatter()
     }
 
     @Test
@@ -31,21 +30,21 @@ class ExpressionEvaluationFormatterTests {
 
         val result = formatter.format(config)
 
-        assertEquals(1, result.formattedProperties.size)
+        Assertions.assertEquals(1, result.formattedProperties.size)
         val formattedProperties = result.formattedProperties[0]
-        assertEquals(3, formattedProperties.size)
+        Assertions.assertEquals(3, formattedProperties.size)
         val mapEntries = formattedProperties.entries.toTypedArray()
 
         val first = mapEntries.singleOrNull { it.key == "test.test1" }
-        assertNotNull(first)
-        assertEquals("testing1testing1testing2testing3testing2", first!!.value)
+        Assertions.assertNotNull(first)
+        Assertions.assertEquals("testing1testing1testing2testing3testing2", first!!.value)
 
         val second = mapEntries.singleOrNull { it.key == "test.test3" }
-        assertNotNull(second)
-        assertEquals("testing14testing23testing3", second!!.value)
+        Assertions.assertNotNull(second)
+        Assertions.assertEquals("testing14testing23testing3", second!!.value)
 
         val third = mapEntries.singleOrNull { it.key == "test.test6" }
-        assertNotNull(third)
-        assertEquals("3.0", third!!.value)
+        Assertions.assertNotNull(third)
+        Assertions.assertEquals("3.0", third!!.value)
     }
 }
