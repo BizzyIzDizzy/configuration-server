@@ -22,7 +22,7 @@ class ConfigurationProcessingPipelineTests {
 
         val parser = PropertiesConfigurationContentParserPlugin.PropertiesConfigurationContentParser()
         val formatter = JavascriptExpressionFormatterPlugin.JavascriptExpressionFormatter()
-        pipeline = ConfigurationProcessingPipeline(setOf(loader1, loader2), setOf(parser), listOf(formatter))
+        pipeline = ConfigurationProcessingPipeline("Test pipeline", setOf(loader1, loader2), setOf(parser), listOf(formatter))
     }
 
     @Test

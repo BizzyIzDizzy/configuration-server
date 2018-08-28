@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import java.util.*
 
 class ConfigurationProcessingPipeline(
+        val name: String,
         private val loaders: Set<IConfigurationLoader>,
         private val parsers: Set<IConfigurationContentParser>,
         private val formatters: List<IConfigurationFormatter>) {
