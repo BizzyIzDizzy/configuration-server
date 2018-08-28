@@ -2,6 +2,7 @@ package me.marolt.configurationserver.plugins.formatters
 
 import me.marolt.configurationserver.api.Configuration
 import me.marolt.configurationserver.api.IConfigurationFormatter
+import me.marolt.configurationserver.utils.ConfigurableOption
 import me.marolt.configurationserver.utils.resolveExpressions
 import mu.KotlinLogging
 import org.pf4j.Extension
@@ -14,6 +15,10 @@ import javax.script.ScriptEngineManager
 class JavascriptExpressionFormatterPlugin(wrapper: PluginWrapper) : Plugin(wrapper) {
     @Extension
     class JavascriptExpressionFormatter : IConfigurationFormatter {
+        override val configurableOptions: Set<ConfigurableOption> by lazy { emptySet<ConfigurableOption>() }
+        override fun configure(options: Map<String, Any>) {}
+        override val id: String by lazy { "javascript-expression-formatter" }
+
         private val engine: ScriptEngine
         private val functionEngine: Invocable
 

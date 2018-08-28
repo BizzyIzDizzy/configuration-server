@@ -1,6 +1,7 @@
 package me.marolt.configurationserver.plugins.parsers
 
 import me.marolt.configurationserver.api.*
+import me.marolt.configurationserver.utils.ConfigurableOption
 import me.marolt.configurationserver.utils.logAndThrow
 import mu.KotlinLogging
 import org.pf4j.Extension
@@ -11,6 +12,10 @@ import java.util.*
 class PropertiesConfigurationContentParserPlugin(wrapper: PluginWrapper) : Plugin(wrapper) {
     @Extension
     class PropertiesConfigurationContentParser : IConfigurationContentParser {
+        override val configurableOptions: Set<ConfigurableOption> by lazy { emptySet<ConfigurableOption>() }
+        override fun configure(options: Map<String, Any>) {}
+        override val id: String by lazy { "properties-parser" }
+
         override val type: String by lazy { "properties" }
 
         companion object {

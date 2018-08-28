@@ -15,6 +15,7 @@ import java.io.File
 class DirectoryConfigurationLoaderPlugin(wrapper: PluginWrapper) : Plugin(wrapper) {
     @Extension
     class DirectoryConfigurationLoader : IConfigurationLoader {
+        override val id: String by lazy { "directory-loader" }
         override val configurableOptions: Set<ConfigurableOption> by lazy {
             setOf(
                     ConfigurableOption("root.path", ConfigurableOptionType.String, true)

@@ -1,5 +1,5 @@
 package me.marolt.configurationserver.api
 
-interface IConfigurationFormatter {
+interface IConfigurationFormatter : IPlugin {
     fun format(config: Configuration): Configuration
 }

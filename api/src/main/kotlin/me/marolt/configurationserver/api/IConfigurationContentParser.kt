@@ -2,7 +2,7 @@ package me.marolt.configurationserver.api
 
 import java.util.*
 
-interface IConfigurationContentParser {
+interface IConfigurationContentParser : IPlugin {
     val type: String
 
     fun parse(current: ConfigurationContent,
