@@ -1,5 +1,6 @@
 package me.marolt.configurationserver.web
 
+import com.google.gson.Gson
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -14,22 +15,47 @@ import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import me.marolt.configurationserver.api.IConfiguration
+import me.marolt.configurationserver.api.IPlugin
+import me.marolt.configurationserver.core.ConfigurationProcessingPipeline
+import me.marolt.configurationserver.core.PipelineConfiguration
 import me.marolt.configurationserver.utils.DEVELOPMENT_MODE
 import me.marolt.configurationserver.utils.IControl
 import me.marolt.configurationserver.utils.fullMessage
 import me.marolt.configurationserver.utils.tryGetEnvironmentVariable
 import mu.KotlinLogging
+import org.pf4j.*
+import java.io.File
+import java.io.FileReader
+import java.nio.file.FileSystems
 import java.util.concurrent.TimeUnit
 
 class ServerControl : IControl {
-    private val logger = KotlinLogging.logger {}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-    private var server: NettyApplicationEngine? = null
+    private lateinit var server: NettyApplicationEngine
+        @Synchronized get
+        @Synchronized set
+
+    private lateinit var pluginManager: PluginManager
+        @Synchronized get
+        @Synchronized set
+
+    private var pipelines: List<ConfigurationProcessingPipeline> = emptyList()
+        @Synchronized get
+        @Synchronized set
+
+    private var configurations: Map<String, Set<IConfiguration>> = emptyMap()
         @Synchronized get
         @Synchronized set
 
     override suspend fun start() {
         logger.info { "Starting server!" }
+
+        startPluginSystem()
+        startPipelines()
 
         val port = tryGetEnvironmentVariable("CFG_SERVER_PORT")?.toInt() ?: 8080
 
@@ -46,17 +72,53 @@ class ServerControl : IControl {
         logger.info { "Server started! Listening at port $port." }
     }
 
+    private fun startPluginSystem() {
+        logger.info { "Initializing plugin system!" }
+        val path = FileSystems.getDefault().getPath(File("plugins/bin").absolutePath)
+        val pm = object : DefaultPluginManager(path) {
+            override fun createPluginDescriptorFinder(): PluginDescriptorFinder {
+                return CompoundPluginDescriptorFinder()
+                        .add(ManifestPluginDescriptorFinder())
+            }
+        }
+        pm.loadPlugins()
+        pm.startPlugins()
+        pluginManager = pm
+
+        logger.info { "Plugin system started! Loaded plugins: [${pm.getExtensions(IPlugin::class.java).joinToString(", ") { it.id }}]" }
+    }
+
+    private fun startPipelines() {
+        logger.info { "Loading pipeline configuration from 'pipelineConfiguration.json'." }
+        val pipelineConfigurations: Array<PipelineConfiguration> = Gson().fromJson(FileReader(File("pipelineConfiguration.json")), Array<PipelineConfiguration>::class.java)
+        val results = pipelineConfigurations.map { ConfigurationProcessingPipeline.configurePipeline(it, pluginManager) }
+        logger.info { "Successfully configured pipelines: [${results.joinToString(", ") { it.name }}]" }
+        pipelines = results
+        refreshPipelines()
+    }
+
+    private fun refreshPipelines(names: List<String>? = null) {
+        configurations = if (names == null) {
+            pipelines.map { it.name to it.run() }.toMap()
+        } else {
+            pipelines.filter { names.contains(it.name) }.map { it.name to it.run() }.toMap()
+        }
+    }
+
     override suspend fun stop() {
         logger.info { "Stopping server!" }
 
         val serverInstance = server
 
-        if (serverInstance == null) {
-            logger.warn { "Server isn't started!" }
-        } else {
-            serverInstance.stop(1000, 1000, TimeUnit.MILLISECONDS)
-            logger.info { "Server stopped!" }
-        }
+        serverInstance.stop(1000, 1000, TimeUnit.MILLISECONDS)
+        logger.info { "Server stopped!" }
+
+        stopPluginSystem()
+    }
+
+    private fun stopPluginSystem() {
+        pluginManager.stopPlugins()
+        logger.info { "Plugin system stopped!" }
     }
 }
 

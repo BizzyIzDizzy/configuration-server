@@ -35,7 +35,7 @@ fun Throwable.stackTraceAsString(): String {
     }
 }
 
-fun KLogger.logAndThrow(throwable: Throwable) {
+fun KLogger.logAndReturn(throwable: Throwable): Throwable {
     this.error { throwable.message }
-    throw throwable
+    return throwable
 }

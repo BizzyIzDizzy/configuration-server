@@ -1,4 +1,4 @@
-package me.marolt.configurationserver.services
+package me.marolt.configurationserver.core
 
 import me.marolt.configurationserver.api.*
 

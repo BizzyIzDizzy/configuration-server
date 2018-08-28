@@ -1,8 +1,9 @@
-package me.marolt.configurationserver.services
+package me.marolt.configurationserver.core
 
 import me.marolt.configurationserver.api.*
-import me.marolt.configurationserver.utils.logAndThrow
+import me.marolt.configurationserver.utils.logAndReturn
 import mu.KotlinLogging
+import org.pf4j.PluginManager
 import java.util.*
 
 class ConfigurationProcessingPipeline(
@@ -12,7 +13,40 @@ class ConfigurationProcessingPipeline(
         private val formatters: List<IConfigurationFormatter>) {
 
     companion object {
-        val logger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
+
+        fun configurePipeline(pipelineConfig: PipelineConfiguration, pluginManager: PluginManager): ConfigurationProcessingPipeline {
+            logger.info { "Configuration pipeline '${pipelineConfig.name}' is being configured!" }
+
+            val loaders: Set<IConfigurationLoader> = pipelineConfig.loaders.map { pc ->
+                val plugin = pluginManager.getExtensions(IConfigurationLoader::class.java).singleOrNull { it.id == pc.id }
+                        ?: throw logger.logAndReturn(IllegalStateException("No loader plugin with id '${pc.id}' was found!"))
+                plugin.configure(pc.options)
+                plugin
+            }.toSet()
+
+            if (loaders.isEmpty()) throw logger.logAndReturn(IllegalStateException("No loaders were configured!"))
+
+            val parsers: Set<IConfigurationContentParser> = pipelineConfig.parsers.map { pc ->
+                val plugin = pluginManager.getExtensions(IConfigurationContentParser::class.java).singleOrNull { it.id == pc.id }
+                ?: throw logger.logAndReturn(IllegalStateException("No parser plugin with id '${pc.id}' was found!"))
+
+                plugin.configure(pc.options)
+                plugin
+            }.toSet()
+
+            if(parsers.isEmpty()) throw logger.logAndReturn(IllegalStateException("No parsers were configured!"))
+
+            val formatters: List<IConfigurationFormatter> = pipelineConfig.formatters.map { pc ->
+                val plugin = pluginManager.getExtensions(IConfigurationFormatter::class.java).singleOrNull { it.id == pc.id }
+                ?: throw logger.logAndReturn(IllegalStateException("No formatter plugin with id '${pc.id}' was found!"))
+
+                plugin.configure(pc.options)
+                plugin
+            }
+
+            return ConfigurationProcessingPipeline(pipelineConfig.name, loaders, parsers, formatters)
+        }
     }
 
     fun run(): Set<IConfiguration> {
@@ -49,7 +83,7 @@ class ConfigurationProcessingPipeline(
                     parsedConfigurations.add(config)
                 }
             } else {
-                logger.logAndThrow(IllegalStateException("No parser was found for '${configurationContent.type}'!"))
+                throw logger.logAndReturn(IllegalStateException("No parser was found for '${configurationContent.type}'!"))
             }
         }
 
@@ -77,3 +111,12 @@ class ConfigurationProcessingPipeline(
         return configurations
     }
 }
+
+data class PipelineConfiguration(
+        val name: String,
+        val loaders: List<PluginConfiguration>,
+        val parsers: List<PluginConfiguration>,
+        val formatters: List<PluginConfiguration>
+)
+
+data class PluginConfiguration(val id: String, val options: Map<String, String>)

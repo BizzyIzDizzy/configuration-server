@@ -5,7 +5,7 @@ import me.marolt.configurationserver.api.IConfigurationLoader
 import me.marolt.configurationserver.api.ValidConfigurationId
 import me.marolt.configurationserver.utils.ConfigurableOption
 import me.marolt.configurationserver.utils.ConfigurableOptionType
-import me.marolt.configurationserver.utils.logAndThrow
+import me.marolt.configurationserver.utils.logAndReturn
 import mu.KotlinLogging
 import org.pf4j.Extension
 import org.pf4j.Plugin
@@ -31,7 +31,7 @@ class DirectoryConfigurationLoaderPlugin(wrapper: PluginWrapper) : Plugin(wrappe
 
         override fun configure(options: Map<String, Any>) {
             if (!options.containsKey("root.path")) {
-                logger.logAndThrow(IllegalArgumentException("Loader needs root.path option to be provided!"))
+                throw logger.logAndReturn(IllegalArgumentException("Loader needs root.path option to be provided!"))
             }
 
             rootPath = options.getValue("root.path").toString()
@@ -40,7 +40,7 @@ class DirectoryConfigurationLoaderPlugin(wrapper: PluginWrapper) : Plugin(wrappe
 
         override fun loadConfigurationContents(): Set<ConfigurationContent> {
             if (rootAbsolutePath == null) {
-                logger.logAndThrow(IllegalStateException("Loader is not configured correctly! Missing root.path configuration!"))
+                throw logger.logAndReturn(IllegalStateException("Loader is not configured correctly! Missing root.path configuration!"))
             }
 
             logger.info { "Loading files from $rootAbsolutePath" }

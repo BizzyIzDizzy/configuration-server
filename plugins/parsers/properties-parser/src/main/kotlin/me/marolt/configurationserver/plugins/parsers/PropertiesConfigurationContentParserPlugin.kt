@@ -2,7 +2,7 @@ package me.marolt.configurationserver.plugins.parsers
 
 import me.marolt.configurationserver.api.*
 import me.marolt.configurationserver.utils.ConfigurableOption
-import me.marolt.configurationserver.utils.logAndThrow
+import me.marolt.configurationserver.utils.logAndReturn
 import mu.KotlinLogging
 import org.pf4j.Extension
 import org.pf4j.Plugin
@@ -27,7 +27,7 @@ class PropertiesConfigurationContentParserPlugin(wrapper: PluginWrapper) : Plugi
                            rest: Set<ConfigurationContent>,
                            parseStack: Stack<ValidConfigurationId>): Set<Configuration> {
             if (parseStack.contains(current.id)) {
-                logger.logAndThrow(IllegalStateException("Configuration loop detected! '${current.id}' is already present in the resolution stack!"))
+                throw logger.logAndReturn(IllegalStateException("Configuration loop detected! '${current.id}' is already present in the resolution stack!"))
             }
 
             val existingConfiguration = parsed.singleOrNull { it.typedId == current.id }
@@ -50,7 +50,7 @@ class PropertiesConfigurationContentParserPlugin(wrapper: PluginWrapper) : Plugi
                         val parentConfigurationId = ValidConfigurationId(parent)
 
                         if (parseStack.contains(parentConfigurationId)) {
-                            logger.logAndThrow(IllegalStateException("Configuration loop detected! '${parentConfigurationId}' is already present in the resolution stack!"))
+                            throw logger.logAndReturn(IllegalStateException("Configuration loop detected! '${parentConfigurationId}' is already present in the resolution stack!"))
                         }
 
                         val existingParentConfiguration = parsed.singleOrNull { parentConfigurationId == it.typedId }
