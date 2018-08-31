@@ -20,6 +20,7 @@ import me.marolt.configurationserver.api.IPlugin
 import me.marolt.configurationserver.core.ConfigurationProcessingPipeline
 import me.marolt.configurationserver.core.PipelineConfiguration
 import me.marolt.configurationserver.utils.*
+import mu.KLogger
 import mu.KotlinLogging
 import org.pf4j.*
 import java.io.File
@@ -58,9 +59,9 @@ class ServerControl : IControl {
 
         val serverInstance =
                 if (DEVELOPMENT_MODE)
-                    embeddedServer(Netty, port = port, module = Application::mainModule, watchPaths = listOf("configuration-server"))
+                    embeddedServer(Netty, port = port, module = createModule(), watchPaths = listOf("configuration-server"))
                 else
-                    embeddedServer(Netty, port = port, module = Application::mainModule)
+                    embeddedServer(Netty, port = port, module = createModule())
 
         serverInstance.start(wait = false)
 
@@ -123,71 +124,87 @@ class ServerControl : IControl {
         pluginManager.stopPlugins()
         logger.info { "Plugin system stopped!" }
     }
-}
 
-fun Application.mainModule() {
-    install(CORS) {
-        method(HttpMethod.Options)
-        anyHost()
-    }
+    private fun createModule(): Application.() -> Unit {
+        return {
+            install(CORS) {
+                method(HttpMethod.Options)
+                anyHost()
+            }
 
-    install(StatusPages) {
-        exceptionHandling()
-    }
+            install(StatusPages) {
+                exceptionHandling()
+            }
 
-    install(ContentNegotiation) {
-        gson {
-            setPrettyPrinting()
-            serializeNulls()
-            generateNonExecutableJson()
-        }
-    }
+            install(ContentNegotiation) {
+                gson {
+                    setPrettyPrinting()
+                    serializeNulls()
+                    generateNonExecutableJson()
+                }
+            }
 
-    routing {
-        root()
-    }
-}
-
-fun Routing.root() {
-    val logger = KotlinLogging.logger {}
-
-    route("{path...}") {
-        method(HttpMethod.Get) {
-            handle {
-                logger.info { "Called ${this.context.request.toLogString()}" }
-                call.respondText { "test" }
+            routing {
+                val routing = createRouter()
+                routing()
             }
         }
     }
 
-    post("/refreshAll") {
-        logger.info { "Refreshing all configurations on all paths." }
-        call.respondText { "DONE" }
+    private fun createRouter(): Routing.() -> Unit {
+        return {
+//            route("{path...}") {
+//                method(HttpMethod.Get) {
+//                    handle {
+//                        logger.info { "Called ${this.context.request.toLogString()}" }
+//                        call.respondText { "test" }
+//                    }
+//                }
+//            }
+
+            route("/api/pipelines") {
+                get("/") {
+                    logger.info { "Called ${this.context.request.toLogString()}." }
+                    call.respondText { "get pipelines" }
+                }
+
+                route("/{pipelineName}") {
+                    get("/") {
+                        val pipelineName = call.parameters["pipelineName"]
+                        logger.info { "Called ${this.context.request.toLogString()}."}
+                        call.respondText { "get specific pipeline $pipelineName." }
+                    }
+                }
+            }
+
+            post("/refreshAll") {
+                logger.info { "Refreshing all configurations on all paths." }
+                call.respondText { "DONE" }
+            }
+
+            post("/refresh") {
+                val request = call.receive<RefreshRequest>()
+                logger.info { "Refreshing configurations on paths: [${request.paths.joinToString()}]" }
+                call.respondText { "DONE" }
+            }
+
+            get("/favicon.ico") {
+                logger.warn { "No favicon." }
+                call.respond(HttpStatusCode.NotFound, "No favicon")
+            }
+        }
     }
 
-    post("/refresh") {
-        val request = call.receive<RefreshRequest>()
-        logger.info { "Refreshing configurations on paths: [${request.paths.joinToString()}]" }
-        call.respondText { "DONE" }
-    }
+    private fun StatusPages.Configuration.exceptionHandling() {
+        statusFile(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized, filePattern = "error#.html")
 
-    get("/favicon.ico") {
-        logger.warn { "No favicon." }
-        call.respond(HttpStatusCode.NotFound, "No favicon")
-    }
-}
-
-fun StatusPages.Configuration.exceptionHandling() {
-    val logger = KotlinLogging.logger {}
-
-    statusFile(HttpStatusCode.NotFound, HttpStatusCode.Unauthorized, filePattern = "error#.html")
-
-    exception<Exception> { cause ->
-        logger.error(cause) { "Unexpected exception occurred!" }
-        if (DEVELOPMENT_MODE) {
-            call.respond(HttpStatusCode.InternalServerError, "Unexpected exception occurred! Additional details: ${cause.fullMessage()}")
-        } else {
-            call.respond(HttpStatusCode.InternalServerError, "Unexpected exception occurred!")
+        exception<Exception> { cause ->
+            logger.error(cause) { "Unexpected exception occurred!" }
+            if (DEVELOPMENT_MODE) {
+                call.respond(HttpStatusCode.InternalServerError, "Unexpected exception occurred! Additional details: ${cause.fullMessage()}")
+            } else {
+                call.respond(HttpStatusCode.InternalServerError, "Unexpected exception occurred!")
+            }
         }
     }
 }
