@@ -19,10 +19,7 @@ import me.marolt.configurationserver.api.IConfiguration
 import me.marolt.configurationserver.api.IPlugin
 import me.marolt.configurationserver.core.ConfigurationProcessingPipeline
 import me.marolt.configurationserver.core.PipelineConfiguration
-import me.marolt.configurationserver.utils.DEVELOPMENT_MODE
-import me.marolt.configurationserver.utils.IControl
-import me.marolt.configurationserver.utils.fullMessage
-import me.marolt.configurationserver.utils.tryGetEnvironmentVariable
+import me.marolt.configurationserver.utils.*
 import mu.KotlinLogging
 import org.pf4j.*
 import java.io.File
@@ -89,8 +86,14 @@ class ServerControl : IControl {
     }
 
     private fun startPipelines() {
-        logger.info { "Loading pipeline configuration from 'pipelineConfiguration.json'." }
-        val pipelineConfigurations: Array<PipelineConfiguration> = Gson().fromJson(FileReader(File("pipelineConfiguration.json")), Array<PipelineConfiguration>::class.java)
+        val filePath = getEnvironmentVariableOrDefault("PIPELINE_CONFIGURATION_FILE", "pipelineConfiguration.json")
+        val file = File(filePath)
+        if (!file.exists()) {
+            throw logger.logAndReturn(IllegalStateException("No pipeline configuration file found at $filePath!"))
+        }
+        logger.info { "Loading pipeline configuration from '$filePath'." }
+
+        val pipelineConfigurations: Array<PipelineConfiguration> = Gson().fromJson(FileReader(file), Array<PipelineConfiguration>::class.java)
         val results = pipelineConfigurations.map { ConfigurationProcessingPipeline.configurePipeline(it, pluginManager) }
         logger.info { "Successfully configured pipelines: [${results.joinToString(", ") { it.name }}]" }
         pipelines = results

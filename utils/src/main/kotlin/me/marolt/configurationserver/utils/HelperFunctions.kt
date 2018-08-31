@@ -13,6 +13,11 @@ fun tryGetEnvironmentVariable(name: String): String? {
     return System.getenv(name)
 }
 
+fun getEnvironmentVariableOrDefault(name: String, defaultValue: String): String {
+    val value = tryGetEnvironmentVariable(name)
+    return value ?: defaultValue
+}
+
 val DEVELOPMENT_MODE = tryGetEnvironmentVariable("CFG_SERVER_DEV_MODE") != null
 
 
