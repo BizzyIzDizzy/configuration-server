@@ -22,14 +22,15 @@ dependencies {
     compile project(":api")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile 'io.github.microutils:kotlin-logging:1.5.4'
+    compile "io.github.microutils:kotlin-logging:1.5.4"
+    compile 'org.reflections:reflections:0.9.10'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
     testRuntime "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
-    testCompile project(":plugins:loaders:directory-loader")
-    testCompile project(":plugins:parsers:properties-parser")
-    testCompile project(":plugins:formatters:javascript-expression-formatter")
+//    testCompile project(":plugins:loaders:directory-loader")
+//    testCompile project(":plugins:parsers:properties-parser")
+//    testCompile project(":plugins:formatters:javascript-expression-formatter")
 }
 
 sourceCompatibility = 1.8

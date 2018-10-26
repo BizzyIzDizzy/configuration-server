@@ -18,7 +18,6 @@ apply plugin: 'org.jetbrains.kotlin.kapt'
 dependencies {
     compile project(":api")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    kapt "org.pf4j:pf4j:2.4.0"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
@@ -38,15 +37,6 @@ repositories {
 }
 
 jar {
-    manifest {
-        attributes(
-                "Plugin-Class": "me.marolt.configurationserver.plugins.parsers.PropertiesConfigurationContentParserPlugin",
-                "Plugin-Dependencies": "",
-                "Plugin-Id": "properties-parser-plugin",
-                "Plugin-Provider": "Uroš Marolt",
-                "Plugin-Version" : "0.0.1"
-        )
-    }
     doLast {
         copy {
             from "build/libs/properties-parser-0.1-SNAPSHOT.jar"

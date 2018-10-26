@@ -17,7 +17,6 @@ apply plugin: 'kotlin'
 dependencies {
     compile project(":utils")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "org.pf4j:pf4j:2.4.0"
 }
 
 sourceCompatibility = 1.8
