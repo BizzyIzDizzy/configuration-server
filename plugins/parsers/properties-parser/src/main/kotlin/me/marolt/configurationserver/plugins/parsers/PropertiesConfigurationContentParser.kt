@@ -10,6 +10,7 @@ class PropertiesConfigurationContentParser : IConfigurationContentParser {
   override val configurableOptions: Set<ConfigurableOption> by lazy { emptySet<ConfigurableOption>() }
   override fun configure(options: Map<String, Any>) {}
   override val id: PluginId by lazy { PluginId(PluginType.Parser, "properties-parser") }
+  override val contentType: String by lazy { "properties" }
 
   companion object {
     private val logger = KotlinLogging.logger {}
