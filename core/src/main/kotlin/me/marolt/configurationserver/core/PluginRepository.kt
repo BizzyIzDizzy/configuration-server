@@ -1,3 +1,17 @@
+//       DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+//                   Version 2, December 2004
+//
+// Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+//
+// Everyone is permitted to copy and distribute verbatim or modified
+// copies of this license document, and changing it is allowed as long
+// as the name is changed.
+//
+//            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+//   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+//
+//  0. You just DO WHAT THE FUCK YOU WANT TO.
+
 package me.marolt.configurationserver.core
 
 import me.marolt.configurationserver.api.IPlugin
@@ -13,62 +27,64 @@ import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
 
 class PluginRepository(
-  private val pluginRoot: String,
-  private val packagePrefix: String) {
+    private val pluginRoot: String,
+    private val packagePrefix: String
+) {
 
-  companion object {
+    companion object {
+        @PublishedApi
+        internal val logger = KotlinLogging.logger {}
+    }
+
     @PublishedApi
-    internal val logger = KotlinLogging.logger {}
-  }
+    internal val reflections by lazy {
+        val pluginDir = File(pluginRoot)
+        if (!pluginDir.exists()) {
+            logger.logAndThrow(IllegalArgumentException("Directory '$pluginRoot' does not exists!"))
+        }
 
-  @PublishedApi
-  internal val reflections by lazy {
-    val pluginDir = File(pluginRoot)
-    if (!pluginDir.exists()) {
-      logger.logAndThrow(IllegalArgumentException("Directory '$pluginRoot' does not exists!"))
+        logger.info { "Checking directory '$pluginRoot' for plugins!" }
+        val pluginFiles = pluginDir.listFiles().filter { it.extension == "jar" }
+
+        logger.info { "Found plugin files: ${pluginFiles.joinToString(", ") { it.name }}." }
+        val classLoader = URLClassLoader(pluginFiles.map { it.toURI().toURL() }.toTypedArray())
+
+        Reflections(
+            ConfigurationBuilder()
+                .setScanners(SubTypesScanner(false))
+                .addClassLoader(classLoader)
+                .setUrls(ClasspathHelper.forPackage(packagePrefix, classLoader))
+        )
     }
 
-    logger.info { "Checking directory '$pluginRoot' for plugins!" }
-    val pluginFiles = pluginDir.listFiles().filter { it.extension == "jar" }
+    @PublishedApi
+    internal val classPluginCache = ConcurrentHashMap<Class<*>, List<Any>>()
 
-    logger.info { "Found plugin files: ${pluginFiles.joinToString(", ") { it.name }}." }
-    val classLoader = URLClassLoader(pluginFiles.map { it.toURI().toURL() }.toTypedArray())
+    private val pluginCache = ConcurrentHashMap<PluginId, IPlugin>()
 
-    Reflections(ConfigurationBuilder()
-      .setScanners(SubTypesScanner(false))
-      .addClassLoader(classLoader)
-      .setUrls(ClasspathHelper.forPackage(packagePrefix, classLoader)))
-  }
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T> loadPlugins(): List<T> {
+        return classPluginCache.getOrPut(T::class.java) {
+            val results = reflections.getSubTypesOf(Object::class.java)
+                .filter { !it.isInterface && T::class.java.isAssignableFrom(it) }
 
-  @PublishedApi
-  internal val classPluginCache = ConcurrentHashMap<Class<*>, List<Any>>()
+            if (results.isEmpty()) logger.logAndThrow(IllegalStateException("No plugins found for '${T::class.java}'!"))
 
-  private val pluginCache = ConcurrentHashMap<PluginId, IPlugin>()
-
-  @Suppress("UNCHECKED_CAST")
-  inline fun <reified T> loadPlugins(): List<T> {
-    return classPluginCache.getOrPut(T::class.java) {
-      val results = reflections.getSubTypesOf(Object::class.java)
-        .filter { !it.isInterface && T::class.java.isAssignableFrom(it) }
-
-      if (results.isEmpty()) logger.logAndThrow(IllegalStateException("No plugins found for '${T::class.java}'!"))
-
-      results.map { it.newInstance() }
-    } as List<T>
-  }
-
-  fun loadPlugin(id: PluginId): IPlugin {
-    return pluginCache.getOrPut(id) {
-      loadPlugins<IPlugin>()
-        .single { it.id == id }
+            results.map { it.newInstance() }
+        } as List<T>
     }
-  }
 
-  @Synchronized
-  fun reload() {
-    logger.info { "Clearing plugin caches." }
-    classPluginCache.clear()
-    pluginCache.clear()
-  }
+    fun loadPlugin(id: PluginId): IPlugin {
+        return pluginCache.getOrPut(id) {
+            loadPlugins<IPlugin>()
+                .single { it.id == id }
+        }
+    }
 
+    @Synchronized
+    fun reload() {
+        logger.info { "Clearing plugin caches." }
+        classPluginCache.clear()
+        pluginCache.clear()
+    }
 }

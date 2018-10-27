@@ -1,3 +1,17 @@
+//       DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+//                   Version 2, December 2004
+//
+// Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+//
+// Everyone is permitted to copy and distribute verbatim or modified
+// copies of this license document, and changing it is allowed as long
+// as the name is changed.
+//
+//            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+//   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+//
+//  0. You just DO WHAT THE FUCK YOU WANT TO.
+
 package me.marolt.configurationserver.utils
 
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,7 +35,8 @@ class ParserUtilsTests {
     @Test
     @DisplayName("Resolve multiple expressions in a string")
     fun resolve_multiple_expressions() {
-        val value = "testing1\${properties.test1 + properties.test2}testing2\${properties.test3}testing3\${properties.test4 * 0.25}testing4"
+        val value =
+            "testing1\${properties.test1 + properties.test2}testing2\${properties.test3}testing3\${properties.test4 * 0.25}testing4"
         val results = value.resolveExpressions()
 
         assertEquals(3, results.size)
@@ -60,5 +75,4 @@ class ParserUtilsTests {
         assertEquals(IntRange(8, 32), entries[0].key)
         assertEquals("{}{{properties.test1}}", entries[0].value)
     }
-
 }
