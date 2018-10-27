@@ -1,38 +1,5 @@
-buildscript {
-    ext.kotlin_version = '1.2.51'
-
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-group 'me.marolt'
-version '0.1-SNAPSHOT'
-
-apply plugin: 'kotlin'
-
 dependencies {
     compile project(":api")
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
-    testRuntime "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
-}
-
-sourceCompatibility = 1.8
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-repositories {
-    mavenCentral()
 }
 
 jar {
@@ -41,17 +8,5 @@ jar {
             from "build/libs/directory-loader-0.1-SNAPSHOT.jar"
             into "../../bin/"
         }
-    }
-}
-
-test {
-    useJUnitPlatform()
-
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-
-    reports {
-        html.enabled = true
     }
 }
