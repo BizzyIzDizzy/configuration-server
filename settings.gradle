@@ -1,3 +1,4 @@
 rootProject.name = 'configuration-server'
 
-include ':core', ':utils', ':api', ':plugins:formatters:javascript-expression-formatter', ':plugins:loaders:directory-loader', ':plugins:parsers:properties-parser'
+apply from: "plugins/settings-parent.gradle"
+include 'core', 'utils', 'api'

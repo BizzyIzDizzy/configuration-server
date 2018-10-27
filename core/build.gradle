@@ -6,8 +6,4 @@ dependencies {
     compile project(":api")
 
     compile 'org.reflections:reflections:0.9.10'
-
-    testCompile project(":plugins:loaders:directory-loader")
-    testCompile project(":plugins:parsers:properties-parser")
-    testCompile project(":plugins:formatters:javascript-expression-formatter")
 }

@@ -1,0 +1,16 @@
+apply plugin: "base"
+
+clean.doFirst {
+    delete "bin"
+}
+
+subprojects {
+    jar {
+        doLast {
+            copy {
+                from "build/libs/${name}-${version}.jar"
+                into "../../bin/"
+            }
+        }
+    }
+}
