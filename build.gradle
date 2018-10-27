@@ -14,7 +14,8 @@ plugins {
 }
 
 subprojects { subProject ->
-    if (subProject.name != "plugins" && subProject.name != "formatters" && subProject.name != "loaders" && subProject.name != "parsers") {
+    println("Project: ${subProject.name}, parent: ${subProject.parent.name}")
+    if (subProject.name != "plugins") {
         repositories {
             jcenter()
         }

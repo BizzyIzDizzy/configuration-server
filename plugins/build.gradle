@@ -1,15 +1,17 @@
 apply plugin: "base"
 
 clean.doFirst {
+    println("Cleaning plugin directory")
     delete "bin"
 }
 
 subprojects {
     jar {
         doLast {
+            println("Copying plugin '${project.name}-${project.version}.jar' to ../bin")
             copy {
-                from "build/libs/${name}-${version}.jar"
-                into "../../bin/"
+                from "build/libs/${project.name}-${project.version}.jar"
+                into "../bin/"
             }
         }
     }

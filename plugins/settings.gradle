@@ -1,1 +1,0 @@
-include 'plugins:javascript-expression-formatter', 'plugins:directory-loader', 'plugins:properties-parser'
