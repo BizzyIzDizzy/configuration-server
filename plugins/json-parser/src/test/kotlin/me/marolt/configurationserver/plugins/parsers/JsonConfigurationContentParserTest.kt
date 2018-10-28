@@ -12,12 +12,11 @@
 //
 //  0. You just DO WHAT THE FUCK YOU WANT TO.
 
-package me.marolt.configurationservice.plugins.parsers
+package me.marolt.configurationserver.plugins.parsers
 
 import me.marolt.configurationserver.api.ConfigurationContent
 import me.marolt.configurationserver.api.ValidConfigurationId
 import me.marolt.configurationserver.api.parser.IConfigurationContentParser
-import me.marolt.configurationserver.plugins.parsers.PropertiesConfigurationContentParser
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -28,10 +27,9 @@ import org.junit.jupiter.api.TestInstance
 import java.util.Stack
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PropertiesConfigurationParserTests {
-
+class JsonConfigurationContentParserTest {
     private val parser: IConfigurationContentParser by lazy {
-        PropertiesConfigurationContentParser()
+        JsonConfigurationContentParser()
     }
 
     companion object {
@@ -44,12 +42,17 @@ class PropertiesConfigurationParserTests {
     @DisplayName("Simple configuration parsing")
     fun parse_simple() {
         val content = ConfigurationContent(
-            parentConfigurationId1, "properties",
+            parentConfigurationId1, "json",
             """
-                    db.host=localhost
-                    db.port=5432
-                    db.password=1234
-                """.trimIndent()
+                {
+                    "db": {
+                        "host": "localhost",
+                        "port": 5432,
+                        "password": "1234"
+                    },
+                    "test": "testValue"
+                }
+            """.trimIndent()
         )
 
         val results = parser.parse(content, emptySet(), emptySet(), Stack(), setOf(parser), false)
@@ -61,24 +64,37 @@ class PropertiesConfigurationParserTests {
         assertEquals("localhost", configuration!!.properties["db.host"])
         assertEquals("5432", configuration.properties["db.port"])
         assertEquals("1234", configuration.properties["db.password"])
-        assertEquals(3, configuration.properties.size)
+        assertEquals("testValue", configuration.properties["test"])
+        assertEquals(4, configuration.properties.size)
     }
 
     @Test
     @DisplayName("Simple parent - child configuration parsing")
     fun parse_simple_parent_child() {
         val parentConfigurationContent = ConfigurationContent(
-            parentConfigurationId1, "properties",
+            parentConfigurationId1, "json",
             """
-                    db.host=localhost
-                    db.port=5432
+                {
+                    "db": {
+                        "host": "localhost",
+                        "port": 5432
+                    }
+                }
                 """.trimIndent()
         )
         val childConfigurationContent = ConfigurationContent(
-            childConfigurationId, "properties",
+            childConfigurationId, "json",
             """
-                    configuration.metadata.parents=${parentConfigurationId1.id}
-                    db.host=127.0.0.1
+                {
+                    "configuration": {
+                        "metadata": {
+                            "parents": "${parentConfigurationId1.id}"
+                        }
+                    },
+                    "db": {
+                        "host": "127.0.0.1"
+                    }
+                }
                 """.trimIndent()
         )
 
@@ -104,24 +120,40 @@ class PropertiesConfigurationParserTests {
     @DisplayName("Multiple parents - child configuration parsing")
     fun parse_multiple_parents_child() {
         val parentConfigurationContent1 = ConfigurationContent(
-            parentConfigurationId1, "properties",
+            parentConfigurationId1, "json",
             """
-            db.host=localhost
-            db.port=5432
-            db.password=123
+                {
+                    "db": {
+                        "host": "localhost",
+                        "port": 5432,
+                        "password": "123"
+                    }
+                }
         """.trimIndent()
         )
         val parentConfigurationContent2 = ConfigurationContent(
-            parentConfigurationId2, "properties",
+            parentConfigurationId2, "json",
             """
-            db.host=127.0.0.1
+                {
+                    "db": {
+                        "host": "127.0.0.1"
+                    }
+                }
         """.trimIndent()
         )
         val childConfigurationContent = ConfigurationContent(
-            childConfigurationId, "properties",
+            childConfigurationId, "json",
             """
-            configuration.metadata.parents=${parentConfigurationId1.id};${parentConfigurationId2.id}
-            db.port=2345
+                {
+                    "configuration": {
+                        "metadata": {
+                            "parents": "${parentConfigurationId1.id};${parentConfigurationId2.id}"
+                        }
+                    },
+                    "db": {
+                        "port": 2345
+                    }
+                }
         """.trimIndent()
         )
 
@@ -161,15 +193,27 @@ class PropertiesConfigurationParserTests {
     @DisplayName("Parent - child loop detected")
     fun parse_dependency_loop() {
         val parentConfigurationContent = ConfigurationContent(
-            parentConfigurationId1, "properties",
+            parentConfigurationId1, "json",
             """
-            configuration.metadata.parents=${childConfigurationId.id}
+                {
+                    "configuration": {
+                        "metadata": {
+                            "parents": "${childConfigurationId.id}"
+                        }
+                    }
+                }
         """.trimIndent()
         )
         val childConfigurationContent = ConfigurationContent(
-            childConfigurationId, "properties",
+            childConfigurationId, "json",
             """
-            configuration.metadata.parents=${parentConfigurationId1.id}
+                {
+                    "configuration": {
+                        "metadata": {
+                            "parents": "${parentConfigurationId1.id}"
+                        }
+                    }
+                }
         """.trimIndent()
         )
 
@@ -187,9 +231,15 @@ class PropertiesConfigurationParserTests {
     @DisplayName("Missing parent")
     fun parse_missing_parent() {
         val configurationContent = ConfigurationContent(
-            childConfigurationId, "properties",
+            childConfigurationId, "json",
             """
-            configuration.metadata.parents=${parentConfigurationId1.id}
+                {
+                    "configuration": {
+                        "metadata": {
+                            "parents": "${parentConfigurationId1.id}"
+                        }
+                    }
+                }
         """.trimIndent()
         )
 

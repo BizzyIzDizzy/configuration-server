@@ -3,7 +3,10 @@ repositories {
 }
 
 dependencies {
-    compile project(":api")
+    api project(":api")
+    implementation project(":utils")
 
-    compile 'org.reflections:reflections:0.9.10'
+    api 'org.reflections:reflections:0.9.11'
+
+    testImplementation "com.google.code.gson:gson:2.8.5"
 }

@@ -16,18 +16,16 @@ package me.marolt.configurationserver.plugins.formatters
 
 import me.marolt.configurationserver.api.Configuration
 import me.marolt.configurationserver.api.IConfigurationFormatter
+import me.marolt.configurationserver.api.PluginBase
 import me.marolt.configurationserver.api.PluginId
 import me.marolt.configurationserver.api.PluginType
-import me.marolt.configurationserver.utils.ConfigurableOption
 import me.marolt.configurationserver.utils.resolveExpressions
 import mu.KotlinLogging
 import javax.script.Invocable
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
-class JavascriptExpressionFormatter : IConfigurationFormatter {
-    override val configurableOptions: Set<ConfigurableOption> by lazy { emptySet<ConfigurableOption>() }
-    override fun configure(options: Map<String, Any>) {}
+class JavascriptExpressionFormatter : PluginBase(), IConfigurationFormatter {
     override val id: PluginId by lazy { PluginId(PluginType.Formatter, "javascript-expression-formatter") }
 
     private val engine: ScriptEngine

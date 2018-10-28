@@ -14,16 +14,15 @@
 
 package me.marolt.configurationserver.api
 
-import java.util.Stack
+import me.marolt.configurationserver.utils.ConfigurableOption
 
-interface IConfigurationContentParser : IPlugin {
+abstract class PluginBase : IPlugin {
+    override fun configure(options: Map<String, Any>) {
+        checkOptions(options)
 
-    val contentType: String
+        applyOptions(options)
+    }
 
-    fun parse(
-        current: ConfigurationContent,
-        parsed: Set<Configuration>,
-        rest: Set<ConfigurationContent>,
-        parseStack: Stack<ValidConfigurationId> = Stack()
-    ): Set<Configuration>
+    override val configurableOptions: Set<ConfigurableOption> by lazy { emptySet<ConfigurableOption>() }
+    open fun applyOptions(options: Map<String, Any>) { }
 }

@@ -14,7 +14,6 @@ plugins {
 }
 
 subprojects { subProject ->
-    println("Project: ${subProject.name}, parent: ${subProject.parent.name}")
     if (subProject.name != "plugins") {
         repositories {
             jcenter()
@@ -27,11 +26,11 @@ subprojects { subProject ->
         apply plugin: "kotlin"
 
         dependencies {
-            compile "io.github.microutils:kotlin-logging:1.5.4"
+            api "io.github.microutils:kotlin-logging:1.5.4"
 
-            testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
-            testRuntime "org.junit.jupiter:junit-jupiter-engine:5.2.0"
-            testRuntime "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
+            testApi "org.junit.jupiter:junit-jupiter-api:5.2.0"
+            testImplementation "org.junit.jupiter:junit-jupiter-engine:5.2.0"
+            testImplementation "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
         }
 
         sourceCompatibility = 1.8

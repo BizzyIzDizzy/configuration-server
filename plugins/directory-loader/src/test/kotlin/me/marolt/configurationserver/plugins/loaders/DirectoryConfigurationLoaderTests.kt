@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 
 class DirectoryConfigurationLoaderTests {
     @Test
-    @DisplayName("Load all configurations from a directory and it's subdirectories")
+    @DisplayName("Load all configurations1 from a directory and it's subdirectories")
     fun simple_load_configurations_from_directory() {
         val loader = DirectoryConfigurationLoader()
         loader.configure(mapOf("root.path" to "./src/test/resources/configurations"))

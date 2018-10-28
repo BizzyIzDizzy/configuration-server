@@ -6,6 +6,11 @@ clean.doFirst {
 }
 
 subprojects {
+    dependencies {
+        api project(":api")
+        api project(":utils")
+    }
+
     jar {
         doLast {
             println("Copying plugin '${project.name}-${project.version}.jar' to ../bin")

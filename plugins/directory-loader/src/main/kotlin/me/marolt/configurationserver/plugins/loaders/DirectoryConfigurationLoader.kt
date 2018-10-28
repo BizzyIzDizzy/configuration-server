@@ -16,6 +16,7 @@ package me.marolt.configurationserver.plugins.loaders
 
 import me.marolt.configurationserver.api.ConfigurationContent
 import me.marolt.configurationserver.api.IConfigurationLoader
+import me.marolt.configurationserver.api.PluginBase
 import me.marolt.configurationserver.api.PluginId
 import me.marolt.configurationserver.api.PluginType
 import me.marolt.configurationserver.api.ValidConfigurationId
@@ -25,12 +26,17 @@ import me.marolt.configurationserver.utils.logAndThrow
 import mu.KotlinLogging
 import java.io.File
 
-class DirectoryConfigurationLoader : IConfigurationLoader {
+class DirectoryConfigurationLoader : PluginBase(), IConfigurationLoader {
     override val id: PluginId by lazy { PluginId(PluginType.Loader, "directory-loader") }
     override val configurableOptions: Set<ConfigurableOption> by lazy {
         setOf(
-            ConfigurableOption("root.path", ConfigurableOptionType.String, true)
+            ConfigurableOption("root.path", ConfigurableOptionType.StringValue, true)
         )
+    }
+
+    override fun applyOptions(options: Map<String, Any>) {
+        rootPath = options.getValue("root.path").toString()
+        rootAbsolutePath = File(rootPath).absolutePath
     }
 
     private var rootPath: String? = null
@@ -38,15 +44,6 @@ class DirectoryConfigurationLoader : IConfigurationLoader {
 
     companion object {
         private val logger = KotlinLogging.logger { }
-    }
-
-    override fun configure(options: Map<String, Any>) {
-        if (!options.containsKey("root.path")) {
-            logger.logAndThrow(IllegalArgumentException("Loader needs root.path option to be provided!"))
-        }
-
-        rootPath = options.getValue("root.path").toString()
-        rootAbsolutePath = File(rootPath).absolutePath
     }
 
     override fun loadConfigurationContents(): Set<ConfigurationContent> {

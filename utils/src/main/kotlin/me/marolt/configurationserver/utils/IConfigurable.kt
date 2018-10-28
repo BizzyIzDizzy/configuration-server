@@ -19,9 +19,24 @@ interface IConfigurable {
     val configurableOptions: Set<ConfigurableOption>
 
     fun configure(options: Map<String, Any>)
+
+    @Throws(IllegalArgumentException::class)
+    fun checkOptions(options: Map<String, Any>) {
+        val results = mutableSetOf<ConfigurableOption>()
+
+        configurableOptions.forEach {
+            if (it.required && !options.containsKey(it.name)) {
+                results.add(it)
+            }
+        }
+
+        if (!results.isEmpty()) {
+            throw IllegalArgumentException("Required options [${results.joinToString { it.name }}] should be provided!")
+        }
+    }
 }
 
 data class ConfigurableOption(val name: String, val type: ConfigurableOptionType, val required: Boolean = false)
 enum class ConfigurableOptionType {
-    String, Integer
+    StringValue, IntegerValue
 }

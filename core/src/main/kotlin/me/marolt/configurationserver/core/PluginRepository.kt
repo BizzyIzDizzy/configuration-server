@@ -23,6 +23,7 @@ import org.reflections.scanners.SubTypesScanner
 import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import java.io.File
+import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
 
@@ -49,12 +50,15 @@ class PluginRepository(
         logger.info { "Found plugin files: ${pluginFiles.joinToString(", ") { it.name }}." }
         val classLoader = URLClassLoader(pluginFiles.map { it.toURI().toURL() }.toTypedArray())
 
-        Reflections(
+        val instance = Reflections(
             ConfigurationBuilder()
                 .setScanners(SubTypesScanner(false))
                 .addClassLoader(classLoader)
-                .setUrls(ClasspathHelper.forPackage(packagePrefix, classLoader))
-        )
+                .setUrls(ClasspathHelper.forPackage(packagePrefix, classLoader)))
+
+        instance.expandSuperTypes()
+
+        instance
     }
 
     @PublishedApi
@@ -65,8 +69,8 @@ class PluginRepository(
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T> loadPlugins(): List<T> {
         return classPluginCache.getOrPut(T::class.java) {
-            val results = reflections.getSubTypesOf(Object::class.java)
-                .filter { !it.isInterface && T::class.java.isAssignableFrom(it) }
+            val results = reflections.getSubTypesOf(IPlugin::class.java)
+                .filter { !it.isInterface && !Modifier.isAbstract(it.modifiers) && T::class.java.isAssignableFrom(it) }
 
             if (results.isEmpty()) logger.logAndThrow(IllegalStateException("No plugins found for '${T::class.java}'!"))
 

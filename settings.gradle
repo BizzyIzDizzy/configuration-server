@@ -1,3 +1,9 @@
+enableFeaturePreview("IMPROVED_POM_SUPPORT")
+
 rootProject.name = 'configuration-server'
 
-include 'core', 'utils', 'api', 'plugins:directory-loader', 'plugins:javascript-expression-formatter', 'plugins:properties-parser'
+include 'core', 'utils', 'api',
+        'plugins:directory-loader',
+        'plugins:javascript-expression-formatter',
+        'plugins:properties-parser',
+        'plugins:json-parser'
