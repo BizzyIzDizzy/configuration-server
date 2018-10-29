@@ -37,8 +37,8 @@ class PluginLoaderTest {
 
         assertEquals(4, results.size)
 
-        var plugin = pluginRepository.loadPlugin(PluginId(PluginType.Loader, "directory-loader"))
-        assertEquals(PluginId(PluginType.Loader, "directory-loader"), plugin.id)
+        var plugin = pluginRepository.loadPlugin(PluginId(PluginType.Loader, "file-system-loader"))
+        assertEquals(PluginId(PluginType.Loader, "file-system-loader"), plugin.id)
 
         val loaderPlugin = plugin as IConfigurationLoader
         assertThrows<IllegalArgumentException> {

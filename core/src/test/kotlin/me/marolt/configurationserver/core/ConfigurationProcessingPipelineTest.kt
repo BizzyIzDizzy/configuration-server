@@ -50,7 +50,7 @@ class ConfigurationProcessingPipelineTest {
             ConfigurationProcessingPipeline.configurePipeline(
                 PipelineConfiguration(
                     "fail_without_parsers", listOf(
-                        PluginConfiguration("directory-loader", mapOf("root.path" to "/"))
+                        PluginConfiguration("file-system-loader", mapOf("root.path" to "/"))
                     ), emptyList(), emptyList()
                 ), pluginRepository
             )
@@ -65,7 +65,7 @@ class ConfigurationProcessingPipelineTest {
         val pipeline = ConfigurationProcessingPipeline.configurePipeline(
             PipelineConfiguration(
                 "fail_when_parsing_wrong_type",
-                listOf(PluginConfiguration("directory-loader", mapOf("root.path" to "./src/test/resources/configurations1"))),
+                listOf(PluginConfiguration("file-system-loader", mapOf("root.path" to "./src/test/resources/configurations1"))),
                 listOf(PluginConfiguration("properties-parser", emptyMap())),
                 emptyList()
             ), pluginRepository)
@@ -80,7 +80,7 @@ class ConfigurationProcessingPipelineTest {
         val pipeline = ConfigurationProcessingPipeline.configurePipeline(
             PipelineConfiguration(
                 "fail_when_parsing_wrong_type",
-                listOf(PluginConfiguration("directory-loader", mapOf("root.path" to "./src/test/resources/configurations1"))),
+                listOf(PluginConfiguration("file-system-loader", mapOf("root.path" to "./src/test/resources/configurations1"))),
                 listOf(PluginConfiguration("properties-parser", emptyMap())),
                 emptyList(),
                 true
@@ -96,7 +96,7 @@ class ConfigurationProcessingPipelineTest {
         val pipeline = ConfigurationProcessingPipeline.configurePipeline(
             PipelineConfiguration(
                 "fail_when_parsing_wrong_type",
-                listOf(PluginConfiguration("directory-loader", mapOf("root.path" to "./src/test/resources/configurations2"))),
+                listOf(PluginConfiguration("file-system-loader", mapOf("root.path" to "./src/test/resources/configurations2"))),
                 listOf(PluginConfiguration("json-parser", mapOf("null-string" to "<null>")), PluginConfiguration("properties-parser", emptyMap())),
                 emptyList()
             ), pluginRepository)
@@ -134,7 +134,7 @@ class ConfigurationProcessingPipelineTest {
         val pipeline = ConfigurationProcessingPipeline.configurePipeline(
             PipelineConfiguration(
                 "fail_when_parsing_wrong_type",
-                listOf(PluginConfiguration("directory-loader", mapOf("root.path" to "./src/test/resources/configurations2"))),
+                listOf(PluginConfiguration("file-system-loader", mapOf("root.path" to "./src/test/resources/configurations2"))),
                 listOf(PluginConfiguration("json-parser", mapOf("null-string" to "<null>")), PluginConfiguration("properties-parser", emptyMap())),
                 listOf(PluginConfiguration("javascript-expression-formatter", emptyMap()))
             ), pluginRepository)
