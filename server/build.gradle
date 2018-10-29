@@ -1,0 +1,36 @@
+buildscript {
+    ext.ktor_version = "1.0.0-beta-2"
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
+    }
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "application"
+
+mainClassName = "me.marolt.configurationserver.server.MainKt"
+
+repositories {
+
+}
+
+dependencies {
+    shadow project(":utils")
+    implementation project(":core")
+
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "io.ktor:ktor-gson:$ktor_version"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
+    implementation "org.apache.logging.log4j:log4j-core:2.11.0"
+}
+
+shadowJar {
+    baseName = "configuration-server"
+    version = project.version
+    classifier = null
+}

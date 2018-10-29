@@ -39,6 +39,8 @@ class PluginRepository(
 
     @PublishedApi
     internal val reflections by lazy {
+        logger.info { "Initializing plugins with plugin root '$pluginRoot' and package filter '$packagePrefix'." }
+
         val pluginDir = File(pluginRoot)
         if (!pluginDir.exists()) {
             logger.logAndThrow(IllegalArgumentException("Directory '$pluginRoot' does not exists!"))
@@ -48,7 +50,7 @@ class PluginRepository(
         val pluginFiles = pluginDir.listFiles().filter { it.extension == "jar" }
 
         logger.info { "Found plugin files: ${pluginFiles.joinToString(", ") { it.name }}." }
-        val classLoader = URLClassLoader(pluginFiles.map { it.toURI().toURL() }.toTypedArray())
+        val classLoader = URLClassLoader(pluginFiles.map { it.toURI().toURL() }.toTypedArray(), this.javaClass.classLoader)
 
         val instance = Reflections(
             ConfigurationBuilder()
@@ -69,8 +71,11 @@ class PluginRepository(
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T> loadPlugins(): List<T> {
         return classPluginCache.getOrPut(T::class.java) {
-            val results = reflections.getSubTypesOf(IPlugin::class.java)
-                .filter { !it.isInterface && !Modifier.isAbstract(it.modifiers) && T::class.java.isAssignableFrom(it) }
+            val allTypes = reflections.getSubTypesOf(IPlugin::class.java)
+            val results = allTypes.filter { type ->
+                !type.isInterface &&
+                    !Modifier.isAbstract(type.modifiers) &&
+                    T::class.java.isAssignableFrom(type) }
 
             if (results.isEmpty()) logger.logAndThrow(IllegalStateException("No plugins found for '${T::class.java}'!"))
 
