@@ -27,7 +27,7 @@ import mu.KLogging
 import java.util.Stack
 
 class ConfigurationProcessingPipeline private constructor(
-    val name: String,
+    val config: PipelineConfiguration,
     private val loaders: Set<IConfigurationLoader>,
     private val parsers: Set<IConfigurationContentParser>,
     private val formatters: List<IConfigurationFormatter>,
@@ -59,7 +59,7 @@ class ConfigurationProcessingPipeline private constructor(
                 plugin as IConfigurationFormatter
             }
 
-            return ConfigurationProcessingPipeline(pipelineConfig.name, loaders, parsers, formatters, pipelineConfig.ignoreUnknownTypes)
+            return ConfigurationProcessingPipeline(pipelineConfig, loaders, parsers, formatters, pipelineConfig.ignoreUnknownTypes)
         }
     }
 
