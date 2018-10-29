@@ -3,6 +3,7 @@
 */build/*
 */out/*
 .gitignore
-LICENSE
 README.md
 .travis.yml
+Dockerfile
+.dockerignore
