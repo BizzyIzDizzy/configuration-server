@@ -11,6 +11,7 @@ buildscript {
 }
 
 plugins {
+    id "base"
     id "com.diffplug.gradle.spotless" version "3.15.0" apply false
 }
 
@@ -84,4 +85,16 @@ task resolveDependencies {
             }
         }
     }
+}
+
+check.doFirst {
+    def file = new File("$rootProject.rootDir.absolutePath/.git/hooks/pre-commit")
+    if (!file.exists()) {
+        throw new GradleScriptException("Git pre-commit hook is not installed! Please run installPreCommitHook or install it manually by copying pre-commit script into .git/hooks!", null)
+    }
+}
+
+task installPreCommitHook(type: Copy) {
+    from new File("$rootProject.rootDir.absolutePath/pre-commit")
+    into { new File("$rootProject.rootDir.absolutePath/.git/hooks") }
 }
