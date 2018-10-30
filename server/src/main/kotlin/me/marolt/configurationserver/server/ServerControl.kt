@@ -194,7 +194,6 @@ fun Application.main() {
                             } else {
                                 call.respondText("Pipeline does not exists!", ContentType.Text.Plain, HttpStatusCode.NotFound)
                             }
-
                         }
 
                         delete("/") {
